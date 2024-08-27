@@ -1,0 +1,217 @@
+---
+title: "MeMoSLAP_RScript_CheckroutinesXNATData"
+author: "Sven Paßmann"
+date: "2024-08-12"
+output: html_document
+---
+
+Loading necessary packages
+
+```{r}
+# install packages first if neceassary
+# install.packages("readxl")
+# install.packages("dplyr")
+
+library(readxl)
+library(dplyr)
+```
+
+remove previous calculations and figures
+
+```{r}
+rm(list = ls())
+graphics.off()
+```
+
+------------------------------------------------------------------------
+
+set the working directory path
+
+```{r}
+setwd("Y:/01_Studien/00_FOR5429_MeMoSLAP/RU_IT/Server/02_Checking_Routines")
+```
+
+read in the data
+
+```{r}
+Check_quest <- read_excel ("Y:/01_Studien/00_FOR5429_MeMoSLAP/RU_Experiments_Participants/11_PreliminaryAnalysis/Data/MeMoSLAP_Data_Neuropsych_Questionnaires.xlsx")
+
+# rename column(s)
+names(Check_quest)[names(Check_quest) == "sub-ID"] <- "participant_id"
+names(Check_quest)[names(Check_quest) == "Project"] <- "project"
+
+# reduce the dataframe
+Check_quest <- Check_quest [, c(1:69)]
+Check_quest <- subset (Check_quest, in_exclude == "included")
+
+# convert in number
+Check_quest$MWT <- as.numeric(Check_quest$MWT)
+```
+
+------------------------------------------------------------------------
+
+Checking data gaps for ages and gender
+
+*creates a file which contains the respective subject IDs where data is missing for the respective item*
+
+```{r}
+Check_age_gender <- Check_quest [, c(1, 6, 7)]
+
+# creating empty file for output
+file_name <- "Output/MeMoSLAP_Report_missdata_AgeGender_P137.txt"
+cat("", file = file_name, append = FALSE)  # Create or overwrite the file
+
+
+# loop through columns, write subjects with missing values separately for each
+# column in txt-file
+for (col in names(Check_age_gender)[-1]) {  # Exclude the 'subject' column
+  missing_subjects <- Check_age_gender[is.na(Check_age_gender[[col]]), "participant_id"]
+  
+  if (length(missing_subjects) > 0) {
+    cat("Subjects with missing data in", col, ":\n", file = file_name, append = TRUE)
+    
+    # Print each missing subject on a new line
+    for (subject in missing_subjects) {
+      cat(subject, "\n", file = file_name, append = TRUE)
+    }
+    
+  } else {
+    cat("No missing data in", col, ".\n", file = file_name, append = TRUE)
+  }
+  
+  cat("\n", file = file_name, append = TRUE)  # Add a blank line between columns
+}
+```
+
+------------------------------------------------------------------------
+
+Checking data gaps for neuropsych file
+
+```{r}
+# checking neuropsych
+Check_neuropsych <- Check_quest [, c(1, 33:69)]
+```
+
+1.  checking for valid scores
+
+*creates a file which contains a list displaying valid scores as TRUE for the respective item*
+
+```{r}
+# Handedness
+Check_neuropsych$Hand_check <- Check_neuropsych$handedness == 2
+
+
+# BDI 
+Check_neuropsych <- Check_neuropsych %>% mutate(BDI_check = between(1,
+0, 20))
+
+
+# VLMT 
+Check_neuropsych <- Check_neuropsych %>% mutate(VLMT_DG1_check =
+between(7, 0, 15))
+
+Check_neuropsych <- Check_neuropsych %>% mutate(VLMT_DG2_check = between(8, 0,
+15))
+
+Check_neuropsych <- Check_neuropsych %>% mutate(VLMT_DG3_check = between(9, 0,
+15))
+
+Check_neuropsych <- Check_neuropsych %>% mutate(VLMT_DG4_check = between(10,
+0, 15))
+
+Check_neuropsych <- Check_neuropsych %>% mutate(VLMT_DG5_check = between(11,
+0, 15))
+
+Check_neuropsych <- Check_neuropsych %>% mutate(VLMT_inter_check = between(12,
+0, 15))
+
+Check_neuropsych <- Check_neuropsych %>% mutate(VLMT_DG6_check = between(13,
+0, 15))
+
+Check_neuropsych <- Check_neuropsych %>% mutate(VLMT_DG7_check = between(14,
+0, 15))
+
+Check_neuropsych <- Check_neuropsych %>% mutate(VLMT_DG8_c_check = between(15,
+0, 15))
+
+Check_neuropsych$VLMT_DG8_fptotal_check <- Check_neuropsych$VLMT_DG8_fptotal <= 15
+
+Check_neuropsych$VLMT_DG8_fplistB_check <- Check_neuropsych$VLMT_DG8_fptotal <= 15
+
+Check_neuropsych$VLMT_DG8_fpsemant_check <- Check_neuropsych$VLMT_DG8_fpsemant <= 15
+
+Check_neuropsych$VLMT_DG8_fpphonem_check <- Check_neuropsych$VLMT_DG8_fpphonem <= 15
+
+
+# Rey Figure 
+Check_neuropsych <- Check_neuropsych %>% mutate(Rey_copy_check =
+between(20, 0, 36)) 
+
+Check_neuropsych <- Check_neuropsych %>%
+mutate(Rey_immediate_check = between(21, 0, 36)) 
+
+Check_neuropsych <-
+Check_neuropsych %>% mutate(Rey_delayed_check = between(22, 0, 36))
+
+
+# Digit span 
+Check_neuropsych$Digit_forward_check <- Check_neuropsych$Digit_forward <= 12
+ #Check_neuropsych %>%  mutate(Digit_forward_check = between(23, 0, 12)) 
+
+Check_neuropsych$Digit_back_check <-  Check_neuropsych$Digit_back <= 12
+ #Check_neuropsych %>% mutate(Digit_back_check = between(24, 0, 12))
+
+
+# MWT 
+Check_neuropsych <- Check_neuropsych %>% mutate(MWT_check = between(36,
+0, 37))
+
+
+# Corsi Block Tapping Task 
+Check_neuropsych$Corsi_forward_check <-  Check_neuropsych$Corsi_forward <= 7
+ # Check_neuropsych %>% mutate(Corsi_forward_check = between(37, 0, 7)) 
+
+Check_neuropsych$Corsi_back_check <-  Check_neuropsych$Corsi_back <= 8
+ # Check_neuropsych %>% mutate(Corsi_back_check = between(38, 0, 8))
+
+
+# creating excel file with TRUE/FALSE scores for valid entries
+Check_valid <- Check_neuropsych [, c(1, 39:61)]
+
+write.table(Check_valid, file = "Output/MeMoSLAP_Report_CheckValidNeuropsych_P137.text", sep = "\t", row.names = FALSE, quote = FALSE)
+```
+
+2.  checking for gaps
+
+*creates a file which contains the respective subject IDs where data is missing for the respective item*
+
+```{r}
+# reduce dataframe to columns of interest
+Check_neuropsych <- Check_neuropsych[c(1:38)]
+
+
+# creating empty file for output
+file_name <- "Output/MeMoSLAP_Report_missdata_Neuropsych_P137.txt"
+cat("", file = file_name, append = FALSE)  # Create or overwrite the file
+
+
+# loop through columns, write subjects with missing values separately for each
+# column in txt-file
+for (col in names(Check_neuropsych)[-1]) {  # Exclude the 'subject' column
+  missing_subjects <- Check_neuropsych[is.na(Check_neuropsych[[col]]), "participant_id"]
+  
+  if (length(missing_subjects) > 0) {
+    cat("Subjects with missing data in", col, ":\n", file = file_name, append = TRUE)
+    
+    # Print each missing subject on a new line
+    for (subject in missing_subjects) {
+      cat(subject, "\n", file = file_name, append = TRUE)
+    }
+    
+    } else {
+    cat("No missing data in", col, ".\n", file = file_name, append = TRUE)
+  }
+  
+  cat("\n", file = file_name, append = TRUE)  # Add a blank line between columns
+}
+```
