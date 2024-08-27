@@ -1,0 +1,158 @@
+---
+title: "MeMoSLAP_RScript_Checkroutines_MatchingAgeSexInclusionEntries"
+author: "Sven Paßmann"
+date: "2024-08-27"
+output: html_document
+---
+
+Loading necessary packages
+
+```{r}
+# install packages if necessary
+# install.packages("readxl")
+# install.packages("dplyr")
+# install.packages("tidyverse")
+
+library(readxl)
+library(dplyr)
+library(tidyverse)
+```
+
+remove previous calculations and figures
+
+```{bash}
+rm(list = ls())
+graphics.off()
+```
+
+setting working directory
+
+*change to the path where your data are stored*
+
+```{bash}
+setwd("Y:/01_Studien/00_FOR5429_MeMoSLAP/RU_Experiments_Participants/11_PreliminaryAnalysis/Data")
+```
+
+------------------------------------------------------------------------
+
+read in data
+
+```{bash}
+Neuro <- read_excel ("MeMoSLAP_Data_Neuropsych_Questionnaires.xlsx")
+Panas <- read_excel ("MeMoSLAP_Data_PANAS_TES.xlsx", sheet = "PANAS")
+AE <- read_excel ("MeMoSLAP_Data_PANAS_TES.xlsx", sheet = "TES")
+LastQuest <- read_excel ("MeMoSLAP_Data_Last_Questionnaire.xlsx")
+```
+
+reducing dataframes
+
+```{bash}
+Neuro <- Neuro [, c(1:7)]
+Panas <- Panas [, c(1:7)]
+AE <- AE [, c(1:7)]
+LastQuest <- LastQuest [, c(1:7)]
+```
+
+rename columns
+
+*need to be renamed to combine them later*
+
+```{bash}
+adding <- "_Neuro"
+for (i in seq_along(names(Neuro))) {
+  names(Neuro)[i] <- paste(names(Neuro)[i], adding, sep = "")
+}
+
+adding <- "_Panas"
+for (i in seq_along(names(Panas))) {
+  names(Panas)[i] <- paste(names(Panas)[i], adding, sep = "")
+}
+
+adding <- "_AE"
+for (i in seq_along(names(AE))) {
+  names(AE)[i] <- paste(names(AE)[i], adding, sep = "")
+}
+
+adding <- "_Last"
+for (i in seq_along(names(LastQuest))) {
+  names(LastQuest)[i] <- paste(names(LastQuest)[i], adding, sep = "")
+}
+
+# combine dataframes
+Combined <- cbind (Neuro, Panas, AE, LastQuest)
+
+```
+
+checking row-by-row (subject-wise) if the entries are all equal
+
+```{bash}
+# for subjects
+Combined_subj <- Combined [, c(1,8,15,22)]
+Combined_subj <- Combined_subj %>%
+  rowwise() %>%
+  mutate(AllEqual = all(c_across(everything()) == first(c_across(everything()))))
+
+
+# for projects
+Combined_proj <- Combined [, c(1,2,9,16,23)]
+Combined_proj <- Combined_proj %>%
+  rowwise() %>%
+  mutate(AllEqual = all(c_across(2:5) == first(c_across(2:5))))
+
+
+# for groups
+Combined_group <- Combined [, c(1,3,10,17,24)]
+Combined_group <- Combined_group %>%
+  rowwise() %>%
+  mutate(AllEqual = all(c_across(2:5) == first(c_across(2:5))))
+
+
+# for switched
+Combined_switch <- Combined [, c(1,4,11,18,25)]
+Combined_switch <- Combined_switch %>%
+  rowwise() %>%
+  mutate(AllEqual = all(c_across(2:5) == first(c_across(2:5))))
+
+
+# for in & exclude
+Combined_inex <- Combined [, c(1,5,12,19,26)]
+Combined_inex <- Combined_inex %>%
+  rowwise() %>%
+  mutate(AllEqual = all(c_across(2:5) == first(c_across(2:5))))
+
+
+# for sex
+Combined_sex <- Combined [, c(1,6,13,20,27)]
+Combined_sex <- Combined_sex %>%
+  rowwise() %>%
+  mutate(AllEqual = all(c_across(2:5) == first(c_across(2:5))))
+
+# for sex
+Combined_age <- Combined [, c(1,7,14,21,28)]
+Combined_age <- Combined_age %>%
+  rowwise() %>%
+  mutate(AllEqual = all(c_across(2:5) == first(c_across(2:5))))
+```
+
+Combine dataframes and save it as .tsv-file
+
+*change the path respectively*
+
+```{bash}
+# combine dataframes
+Combined_check <- cbind (Combined_subj, Combined_proj, Combined_group, Combined_switch,
+                         Combined_inex, Combined_sex, Combined_age)
+
+# save
+write.table(Combined_check, file = "Y:/01_Studien/00_FOR5429_MeMoSLAP/RU_IT/Server/02_Checking_Routines/Output/MeMoSLAP_Report_EqualData_Demographic_P137.tsv", 
+            sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+```
+
+
+
+
+
+
+
+
+
