@@ -9,5 +9,5 @@ MeMoSLAP_PythonScript_CheckroutinesXNATData.py
 MeMoSLAP_RScript_CheckroutinesXNATData.RMD
 - to check if the excel files containing demographic/neuropsych data, PANAS, questionnaire for adverse affects and the strategy/focus questionnaire show gaps
 
-MeMoSLAP_RScript_Checkroutines_MatchingAgeSexInclusionEntries
+MeMoSLAP_RScript_Checkroutines_MatchingAgeSexInclusionEntries.RMD
 - to check if the excel files containing demographic/neuropsych data, PANAS, questionnaire for adverse affects and the strategy/focus questionnaire showing the same entries for subject ID, project/group assignment, in/exclusion, age and sex
