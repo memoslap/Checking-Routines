@@ -7,4 +7,7 @@ MeMoSLAP_PythonScript_CheckroutinesXNATData.py
 - so far, it only allows to check if the respective folders are created on XNAT. IT DOES NOT check whether the respective files are actually uploaded.
    
 MeMoSLAP_RScript_CheckroutinesXNATData.RMD
-- to check if the excel file containing demographic and neuropsych data show gaps
+- to check if the excel files containing demographic/neuropsych data, PANAS, questionnaire for adverse affects and the strategy/focus questionnaire show gaps
+
+MeMoSLAP_RScript_Checkroutines_MatchingAgeSexInclusionEntries
+- to check if the excel files containing demographic/neuropsych data, PANAS, questionnaire for adverse affects and the strategy/focus questionnaire showing the same entries for subject ID, project/group assignment, in/exclusion, age and sex
