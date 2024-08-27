@@ -13,4 +13,4 @@ MeMoSLAP_PythonScript_CheckroutinesXNATData.py
 
    
 MeMoSLAP_RScript_CheckroutinesXNATData.RMD
-- to check if the excel file containing demographic and neuropsych data include show gaps
+- to check if the excel file containing demographic and neuropsych data show gaps
